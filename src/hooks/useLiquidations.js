@@ -8,10 +8,12 @@ export function useLiquidations() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [source, setSource] = useState(null);
+  const [warning, setWarning] = useState(null);
 
   const search = useCallback(async ({ networkKey, startTimestamp, endTimestamp, userAddress }) => {
     setLoading(true);
     setError(null);
+    setWarning(null);
     setData([]);
     setSource(null);
 
@@ -46,7 +48,7 @@ export function useLiquidations() {
 
     // Fallback to RPC
     try {
-      const results = await fetchLiquidationsFromRPC(
+      const { results, isPartial } = await fetchLiquidationsFromRPC(
         network,
         startTimestamp,
         endTimestamp,
@@ -54,6 +56,12 @@ export function useLiquidations() {
       );
       setData(results);
       setSource('rpc');
+      if (isPartial) {
+        setWarning(
+          'RPC results are partial — the date range exceeds what free public RPCs can scan. ' +
+          'Add a Graph API key in Settings for complete results.'
+        );
+      }
     } catch (err) {
       setError(`Failed to fetch liquidations: ${err.message}`);
     } finally {
@@ -61,5 +69,5 @@ export function useLiquidations() {
     }
   }, []);
 
-  return { data, loading, error, source, search };
+  return { data, loading, error, warning, source, search };
 }

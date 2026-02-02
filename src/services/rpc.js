@@ -9,17 +9,20 @@ const ERC20_ABI = [
   'function decimals() view returns (uint8)',
 ];
 
-// Cache token metadata to reduce RPC calls
 const tokenCache = {};
+
+function createProvider(rpcUrl) {
+  return new ethers.JsonRpcProvider(rpcUrl, undefined, {
+    batchMaxCount: 1,
+  });
+}
 
 async function getTokenInfo(provider, address) {
   if (tokenCache[address]) return tokenCache[address];
   try {
     const contract = new ethers.Contract(address, ERC20_ABI, provider);
-    const [symbol, decimals] = await Promise.all([
-      contract.symbol(),
-      contract.decimals(),
-    ]);
+    const symbol = await contract.symbol();
+    const decimals = await contract.decimals();
     tokenCache[address] = { symbol, decimals: Number(decimals) };
   } catch {
     tokenCache[address] = { symbol: address.slice(0, 6), decimals: 18 };
@@ -27,25 +30,13 @@ async function getTokenInfo(provider, address) {
   return tokenCache[address];
 }
 
-async function getBlockForTimestamp(provider, targetTimestamp) {
-  let lo = 0;
-  let hi = await provider.getBlockNumber();
-
-  // Binary search for the closest block
-  while (lo < hi) {
-    const mid = Math.floor((lo + hi) / 2);
-    const block = await provider.getBlock(mid);
-    if (!block) {
-      hi = mid - 1;
-      continue;
-    }
-    if (block.timestamp < targetTimestamp) {
-      lo = mid + 1;
-    } else {
-      hi = mid;
-    }
-  }
-  return lo;
+// Estimate block number from timestamp using average block time.
+// Only needs 1 RPC call (getBlock for latest) instead of ~20 for binary search.
+function estimateBlockForTimestamp(latestBlock, latestTimestamp, targetTimestamp, avgBlockTime) {
+  const secondsDiff = latestTimestamp - targetTimestamp;
+  const blocksDiff = Math.floor(secondsDiff / avgBlockTime);
+  const estimated = latestBlock - blocksDiff;
+  return Math.max(0, estimated);
 }
 
 export async function fetchLiquidationsFromRPC(
@@ -54,83 +45,102 @@ export async function fetchLiquidationsFromRPC(
   endTimestamp,
   userAddress
 ) {
-  const provider = new ethers.JsonRpcProvider(networkConfig.rpcUrl);
+  const provider = createProvider(networkConfig.rpcUrl);
   const pool = new ethers.Contract(networkConfig.poolContract, POOL_ABI, provider);
 
-  // Convert timestamps to block numbers
-  const [fromBlock, toBlock] = await Promise.all([
-    startTimestamp
-      ? getBlockForTimestamp(provider, startTimestamp)
-      : Promise.resolve(networkConfig.startBlock),
-    endTimestamp
-      ? getBlockForTimestamp(provider, endTimestamp)
-      : provider.getBlockNumber(),
-  ]);
+  // 1 RPC call: get latest block (number + timestamp) for estimation
+  const latestBlock = await provider.getBlock('latest');
+  const latestNumber = latestBlock.number;
+  const latestTimestamp = latestBlock.timestamp;
+  const avg = networkConfig.avgBlockTime;
 
-  // Query in chunks to avoid RPC limits (max 10k blocks per query)
-  const MAX_BLOCK_RANGE = 10000;
+  const fromBlock = startTimestamp
+    ? estimateBlockForTimestamp(latestNumber, latestTimestamp, startTimestamp, avg)
+    : networkConfig.startBlock;
+
+  const toBlock = endTimestamp
+    ? estimateBlockForTimestamp(latestNumber, latestTimestamp, endTimestamp, avg)
+    : latestNumber;
+
+  // Query events in chunks — 1 RPC call per chunk
+  // Use per-chain maxLogRange and cap total queries to avoid excessive calls
+  const chunkSize = networkConfig.maxLogRange || 50000;
+  const MAX_CHUNKS = 20;
   const allEvents = [];
+  let chunkCount = 0;
 
-  for (let start = fromBlock; start <= toBlock; start += MAX_BLOCK_RANGE) {
-    const end = Math.min(start + MAX_BLOCK_RANGE - 1, toBlock);
+  for (let start = fromBlock; start <= toBlock && chunkCount < MAX_CHUNKS; start += chunkSize) {
+    const end = Math.min(start + chunkSize - 1, toBlock);
 
-    let filter;
-    if (userAddress) {
-      filter = pool.filters.LiquidationCall(null, null, userAddress);
-    } else {
-      filter = pool.filters.LiquidationCall();
-    }
+    const filter = userAddress
+      ? pool.filters.LiquidationCall(null, null, userAddress)
+      : pool.filters.LiquidationCall();
 
     const events = await pool.queryFilter(filter, start, end);
     allEvents.push(...events);
+    chunkCount++;
   }
 
-  // Resolve token info and block timestamps in parallel batches
+  const totalBlocksNeeded = toBlock - fromBlock;
+  const blocksCovered = chunkCount * chunkSize;
+  const isPartial = blocksCovered < totalBlocksNeeded;
+
+  if (allEvents.length === 0) return { results: [], isPartial };
+
+  // Resolve unique token info — 2 calls per unique token (cached across searches)
   const uniqueTokens = new Set();
   for (const event of allEvents) {
-    uniqueTokens.add(event.args[0]); // collateralAsset
-    uniqueTokens.add(event.args[1]); // debtAsset
+    uniqueTokens.add(event.args[0]);
+    uniqueTokens.add(event.args[1]);
   }
-  await Promise.all(
-    [...uniqueTokens].map((addr) => getTokenInfo(provider, addr))
-  );
+  for (const addr of uniqueTokens) {
+    await getTokenInfo(provider, addr);
+  }
 
-  const results = await Promise.all(
-    allEvents.map(async (event) => {
-      const collateralAsset = event.args[0];
-      const debtAsset = event.args[1];
-      const user = event.args[2];
-      const debtToCover = event.args[3];
-      const liquidatedCollateralAmount = event.args[4];
-      const liquidator = event.args[5];
+  // Resolve unique block timestamps — 1 call per unique block
+  const blockTimestamps = {};
+  const uniqueBlocks = [...new Set(allEvents.map((e) => e.blockNumber))];
+  for (const blockNum of uniqueBlocks) {
+    const block = await provider.getBlock(blockNum);
+    blockTimestamps[blockNum] = block ? block.timestamp : 0;
+  }
 
-      const collateralInfo = await getTokenInfo(provider, collateralAsset);
-      const debtInfo = await getTokenInfo(provider, debtAsset);
+  // Build results — no additional RPC calls
+  const results = allEvents.map((event) => {
+    const collateralAsset = event.args[0];
+    const debtAsset = event.args[1];
+    const user = event.args[2];
+    const debtToCover = event.args[3];
+    const liquidatedCollateralAmount = event.args[4];
+    const liquidator = event.args[5];
 
-      const block = await provider.getBlock(event.blockNumber);
+    const collateralInfo = tokenCache[collateralAsset];
+    const debtInfo = tokenCache[debtAsset];
 
-      const collateralAmount =
-        parseFloat(ethers.formatUnits(liquidatedCollateralAmount, collateralInfo.decimals));
-      const debtAmount =
-        parseFloat(ethers.formatUnits(debtToCover, debtInfo.decimals));
+    const collateralAmount =
+      parseFloat(ethers.formatUnits(liquidatedCollateralAmount, collateralInfo.decimals));
+    const debtAmount =
+      parseFloat(ethers.formatUnits(debtToCover, debtInfo.decimals));
 
-      return {
-        id: `${event.transactionHash}-${event.index}`,
-        txHash: event.transactionHash,
-        timestamp: block ? block.timestamp : 0,
-        user: user.toLowerCase(),
-        liquidator: liquidator.toLowerCase(),
-        collateralSymbol: collateralInfo.symbol,
-        collateralAmount,
-        collateralValueUSD: 0, // Not available from RPC
-        debtSymbol: debtInfo.symbol,
-        debtAmount,
-        debtValueUSD: 0, // Not available from RPC
-        explorerUrl: networkConfig.explorerUrl,
-        source: 'rpc',
-      };
-    })
-  );
+    return {
+      id: `${event.transactionHash}-${event.index}`,
+      txHash: event.transactionHash,
+      timestamp: blockTimestamps[event.blockNumber],
+      user: user.toLowerCase(),
+      liquidator: liquidator.toLowerCase(),
+      collateralSymbol: collateralInfo.symbol,
+      collateralAmount,
+      collateralValueUSD: 0,
+      debtSymbol: debtInfo.symbol,
+      debtAmount,
+      debtValueUSD: 0,
+      explorerUrl: networkConfig.explorerUrl,
+      source: 'rpc',
+    };
+  });
 
-  return results.sort((a, b) => b.timestamp - a.timestamp);
+  return {
+    results: results.sort((a, b) => b.timestamp - a.timestamp),
+    isPartial,
+  };
 }

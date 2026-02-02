@@ -193,6 +193,16 @@ select:focus {
   color: var(--error);
 }
 
+/* Warning */
+.warning-banner {
+  background: rgba(210, 153, 34, 0.1);
+  border: 1px solid var(--warning);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  color: var(--warning);
+}
+
 /* Empty State */
 .empty-state {
   text-align: center;

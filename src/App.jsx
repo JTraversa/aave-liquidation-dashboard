@@ -5,7 +5,7 @@ import { useLiquidations } from './hooks/useLiquidations';
 import './App.css';
 
 function App() {
-  const { data, loading, error, source, search } = useLiquidations();
+  const { data, loading, error, warning, source, search } = useLiquidations();
 
   return (
     <div className="app">
@@ -21,6 +21,11 @@ function App() {
         {error && (
           <div className="error-banner">
             <p>{error}</p>
+          </div>
+        )}
+        {warning && !loading && (
+          <div className="warning-banner">
+            <p>{warning}</p>
           </div>
         )}
         {!loading && !error && <LiquidationTable data={data} source={source} />}
