@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import { MAX_RPC_CHUNKS } from '../config/networks';
 
 const POOL_ABI = [
   'event LiquidationCall(address indexed collateralAsset, address indexed debtAsset, address indexed user, uint256 debtToCover, uint256 liquidatedCollateralAmount, address liquidator, bool receiveAToken)',
@@ -65,21 +66,30 @@ export async function fetchLiquidationsFromRPC(
 
   // Query events in chunks — 1 RPC call per chunk
   // Use per-chain maxLogRange and cap total queries to avoid excessive calls
-  const chunkSize = networkConfig.maxLogRange || 50000;
-  const MAX_CHUNKS = 20;
+  let chunkSize = networkConfig.maxLogRange || 50000;
   const allEvents = [];
   let chunkCount = 0;
 
-  for (let start = fromBlock; start <= toBlock && chunkCount < MAX_CHUNKS; start += chunkSize) {
+  for (let start = fromBlock; start <= toBlock && chunkCount < MAX_RPC_CHUNKS; ) {
     const end = Math.min(start + chunkSize - 1, toBlock);
 
     const filter = userAddress
       ? pool.filters.LiquidationCall(null, null, userAddress)
       : pool.filters.LiquidationCall();
 
-    const events = await pool.queryFilter(filter, start, end);
-    allEvents.push(...events);
-    chunkCount++;
+    try {
+      const events = await pool.queryFilter(filter, start, end);
+      allEvents.push(...events);
+      chunkCount++;
+      start += chunkSize;
+    } catch (err) {
+      // If the RPC rejects the block range, halve the chunk size and retry
+      if (chunkSize > 500 && /block range|range.*too|too many|limit/i.test(String(err))) {
+        chunkSize = Math.floor(chunkSize / 2);
+        continue;
+      }
+      throw err;
+    }
   }
 
   const totalBlocksNeeded = toBlock - fromBlock;

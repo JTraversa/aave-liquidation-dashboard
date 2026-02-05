@@ -97,6 +97,15 @@
   font-size: 0.8rem;
 }
 
+.date-hint {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--text-secondary);
+  opacity: 0.7;
+  font-size: 0.75rem;
+}
+
 /* Form Inputs */
 input[type="text"],
 input[type="date"],

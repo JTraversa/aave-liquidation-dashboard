@@ -4,11 +4,11 @@ export const NETWORKS = {
     chainId: 1,
     subgraphId: 'Cd2gEDVeqnjBn1hSeqFMitw8Q1iiyV9FYUZkLNRcL87g',
     poolContract: '0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2',
-    rpcUrl: 'https://ethereum-rpc.publicnode.com',
+    rpcUrl: 'https://eth.drpc.org',
     explorerUrl: 'https://etherscan.io',
     startBlock: 16291127,
     avgBlockTime: 12,
-    maxLogRange: 2000,
+    maxLogRange: 10000,
   },
   arbitrum: {
     name: 'Arbitrum',
@@ -19,18 +19,18 @@ export const NETWORKS = {
     explorerUrl: 'https://arbiscan.io',
     startBlock: 7742429,
     avgBlockTime: 0.25,
-    maxLogRange: 49999,
+    maxLogRange: 10000,
   },
   polygon: {
     name: 'Polygon',
     chainId: 137,
     subgraphId: 'Co2URyXjnxaw8WqxKyVHdirq9Ahhm5vcTs4dMedAq211',
     poolContract: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
-    rpcUrl: 'https://1rpc.io/matic',
+    rpcUrl: 'https://polygon-bor-rpc.publicnode.com',
     explorerUrl: 'https://polygonscan.com',
     startBlock: 25826028,
     avgBlockTime: 2,
-    maxLogRange: 3000,
+    maxLogRange: 50000,
   },
   optimism: {
     name: 'Optimism',
@@ -85,7 +85,7 @@ export const NETWORKS = {
     explorerUrl: 'https://gnosisscan.io',
     startBlock: 27150000,
     avgBlockTime: 5,
-    maxLogRange: 5000,
+    maxLogRange: 50000,
   },
   scroll: {
     name: 'Scroll',
@@ -96,7 +96,7 @@ export const NETWORKS = {
     explorerUrl: 'https://scrollscan.com',
     startBlock: 4500000,
     avgBlockTime: 3,
-    maxLogRange: 5000,
+    maxLogRange: 50000,
   },
   zksync: {
     name: 'zkSync Era',
@@ -107,31 +107,41 @@ export const NETWORKS = {
     explorerUrl: 'https://era.zksync.network',
     startBlock: 37248000,
     avgBlockTime: 1,
-    maxLogRange: 5000,
+    maxLogRange: 10000000,
   },
   linea: {
     name: 'Linea',
     chainId: 59144,
     subgraphId: 'Gz2kjnmRV1fQj3R8cssoZa5y9VTanhrDo4Mh7nWW1wHa',
     poolContract: '0xc47b8C00b0f69a36fa203Ffeac0334874574a8Ac',
-    rpcUrl: 'https://linea-rpc.publicnode.com',
+    rpcUrl: 'https://rpc.linea.build',
     explorerUrl: 'https://lineascan.build',
     startBlock: 12500000,
     avgBlockTime: 2,
-    maxLogRange: 2000,
+    maxLogRange: 10000000,
   },
   metis: {
     name: 'Metis',
     chainId: 1088,
     subgraphId: null, // Uses Metis-hosted Graph endpoint
     poolContract: '0x90df02551bB792286e8D4f13E0e357b4Bf1D6a57',
-    rpcUrl: 'https://metis-pokt.nodies.app',
+    rpcUrl: 'https://metis-rpc.publicnode.com',
     explorerUrl: 'https://explorer.metis.io',
     startBlock: 5765988,
     avgBlockTime: 4,
-    maxLogRange: 499,
+    maxLogRange: 50000,
   },
 };
+
+export const MAX_RPC_CHUNKS = 40;
+
+/** Max queryable date range in days for RPC mode on a given network. */
+export function getMaxDateRangeDays(networkKey) {
+  const net = NETWORKS[networkKey];
+  if (!net) return Infinity;
+  const seconds = net.maxLogRange * MAX_RPC_CHUNKS * net.avgBlockTime;
+  return seconds / 86400;
+}
 
 export const GRAPH_GATEWAY_URL = 'https://gateway.thegraph.com/api';
 
