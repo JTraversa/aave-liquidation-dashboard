@@ -1,5 +1,6 @@
 import Header from './components/Header';
 import SearchForm from './components/SearchForm';
+import StatsBar from './components/StatsBar';
 import LiquidationTable from './components/LiquidationTable';
 import { useLiquidations } from './hooks/useLiquidations';
 import './App.css';
@@ -28,6 +29,7 @@ function App() {
             <p>{warning}</p>
           </div>
         )}
+        {!loading && !error && data.length > 0 && <StatsBar data={data} source={source} />}
         {!loading && !error && <LiquidationTable data={data} source={source} />}
       </main>
     </div>

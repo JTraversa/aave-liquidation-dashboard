@@ -32,11 +32,12 @@ query GetLiquidations($first: Int!, $skip: Int!, $where: LiquidationCall_filter,
 }
 `;
 
-function buildWhereFilter(startTimestamp, endTimestamp, userAddress) {
+function buildWhereFilter(startTimestamp, endTimestamp, userAddress, liquidatorAddress) {
   const where = {};
   if (startTimestamp) where.timestamp_gte = String(startTimestamp);
   if (endTimestamp) where.timestamp_lte = String(endTimestamp);
   if (userAddress) where.user = userAddress.toLowerCase();
+  if (liquidatorAddress) where.liquidator = liquidatorAddress.toLowerCase();
   return where;
 }
 
@@ -73,12 +74,13 @@ export async function fetchLiquidationsFromSubgraph(
   startTimestamp,
   endTimestamp,
   userAddress,
+  liquidatorAddress,
   explorerUrl
 ) {
   const url = getSubgraphUrl(networkKey, apiKey);
   if (!url) throw new Error('No subgraph URL available. Check your API key.');
 
-  const where = buildWhereFilter(startTimestamp, endTimestamp, userAddress);
+  const where = buildWhereFilter(startTimestamp, endTimestamp, userAddress, liquidatorAddress);
   const allResults = [];
   let skip = 0;
   const pageSize = 1000;

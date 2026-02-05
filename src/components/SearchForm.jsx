@@ -19,10 +19,19 @@ export default function SearchForm({ onSearch, loading }) {
   const [startDate, setStartDate] = useState(defaults.start);
   const [endDate, setEndDate] = useState(defaults.end);
   const [address, setAddress] = useState('');
+  const [liquidatorAddress, setLiquidatorAddress] = useState('');
   const [addressError, setAddressError] = useState('');
+  const [liquidatorError, setLiquidatorError] = useState('');
+  const [dateError, setDateError] = useState('');
 
   function handleSubmit(e) {
     e.preventDefault();
+
+    if (startDate && endDate && startDate > endDate) {
+      setDateError('Start date must be before end date');
+      return;
+    }
+    setDateError('');
 
     if (address && !ethers.isAddress(address)) {
       setAddressError('Invalid Ethereum address');
@@ -30,11 +39,18 @@ export default function SearchForm({ onSearch, loading }) {
     }
     setAddressError('');
 
+    if (liquidatorAddress && !ethers.isAddress(liquidatorAddress)) {
+      setLiquidatorError('Invalid Ethereum address');
+      return;
+    }
+    setLiquidatorError('');
+
     onSearch({
       networkKey: network,
       startTimestamp: dateToTimestamp(startDate),
       endTimestamp: dateToTimestamp(endDate + 'T23:59:59'),
       userAddress: address || null,
+      liquidatorAddress: liquidatorAddress || null,
     });
   }
 
@@ -60,13 +76,17 @@ export default function SearchForm({ onSearch, loading }) {
             id="end-date"
             type="date"
             value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
+            onChange={(e) => {
+              setEndDate(e.target.value);
+              setDateError('');
+            }}
           />
         </div>
       </div>
+      {dateError && <div className="form-row"><span className="form-error">{dateError}</span></div>}
       <div className="form-row">
-        <div className="form-group form-group-wide">
-          <label htmlFor="address">Wallet Address (optional)</label>
+        <div className="form-group form-group-half">
+          <label htmlFor="address">Liquidated User (optional)</label>
           <input
             id="address"
             type="text"
@@ -79,6 +99,21 @@ export default function SearchForm({ onSearch, loading }) {
             spellCheck={false}
           />
           {addressError && <span className="form-error">{addressError}</span>}
+        </div>
+        <div className="form-group form-group-half">
+          <label htmlFor="liquidator">Liquidator (optional)</label>
+          <input
+            id="liquidator"
+            type="text"
+            value={liquidatorAddress}
+            onChange={(e) => {
+              setLiquidatorAddress(e.target.value);
+              setLiquidatorError('');
+            }}
+            placeholder="0x..."
+            spellCheck={false}
+          />
+          {liquidatorError && <span className="form-error">{liquidatorError}</span>}
         </div>
         <div className="form-group form-group-btn">
           <button className="btn btn-primary" type="submit" disabled={loading}>

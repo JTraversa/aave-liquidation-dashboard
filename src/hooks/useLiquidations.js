@@ -10,7 +10,7 @@ export function useLiquidations() {
   const [source, setSource] = useState(null);
   const [warning, setWarning] = useState(null);
 
-  const search = useCallback(async ({ networkKey, startTimestamp, endTimestamp, userAddress }) => {
+  const search = useCallback(async ({ networkKey, startTimestamp, endTimestamp, userAddress, liquidatorAddress }) => {
     setLoading(true);
     setError(null);
     setWarning(null);
@@ -35,6 +35,7 @@ export function useLiquidations() {
           startTimestamp,
           endTimestamp,
           userAddress,
+          liquidatorAddress,
           network.explorerUrl
         );
         setData(results);
@@ -52,7 +53,8 @@ export function useLiquidations() {
         network,
         startTimestamp,
         endTimestamp,
-        userAddress
+        userAddress,
+        liquidatorAddress
       );
       setData(results);
       setSource('rpc');

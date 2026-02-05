@@ -28,9 +28,12 @@ function compareValues(a, b, key) {
   return String(va).localeCompare(String(vb));
 }
 
+const PAGE_SIZE = 50;
+
 export default function LiquidationTable({ data, source }) {
   const [sortKey, setSortKey] = useState('timestamp');
   const [sortDir, setSortDir] = useState('desc');
+  const [page, setPage] = useState(0);
 
   function handleSort(key) {
     if (sortKey === key) {
@@ -39,12 +42,17 @@ export default function LiquidationTable({ data, source }) {
       setSortKey(key);
       setSortDir('desc');
     }
+    setPage(0);
   }
 
   const sorted = [...data].sort((a, b) => {
     const result = compareValues(a, b, sortKey);
     return sortDir === 'asc' ? result : -result;
   });
+
+  const totalPages = Math.ceil(sorted.length / PAGE_SIZE);
+  const safePage = Math.min(page, totalPages - 1);
+  const pageData = sorted.slice(safePage * PAGE_SIZE, (safePage + 1) * PAGE_SIZE);
 
   if (data.length === 0) {
     return (
@@ -84,7 +92,7 @@ export default function LiquidationTable({ data, source }) {
             </tr>
           </thead>
           <tbody>
-            {sorted.map((row) => (
+            {pageData.map((row) => (
               <tr key={row.id}>
                 <td className="nowrap">{formatTimestamp(row.timestamp)}</td>
                 <td>
@@ -125,6 +133,17 @@ export default function LiquidationTable({ data, source }) {
           </tbody>
         </table>
       </div>
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button disabled={safePage === 0} onClick={() => setPage(0)}>First</button>
+          <button disabled={safePage === 0} onClick={() => setPage((p) => p - 1)}>Prev</button>
+          <span className="page-info">
+            Page {safePage + 1} of {totalPages}
+          </span>
+          <button disabled={safePage >= totalPages - 1} onClick={() => setPage((p) => p + 1)}>Next</button>
+          <button disabled={safePage >= totalPages - 1} onClick={() => setPage(totalPages - 1)}>Last</button>
+        </div>
+      )}
     </div>
   );
 }

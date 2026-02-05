@@ -43,7 +43,8 @@ export async function fetchLiquidationsFromRPC(
   networkConfig,
   startTimestamp,
   endTimestamp,
-  userAddress
+  userAddress,
+  liquidatorAddress
 ) {
   const provider = createProvider(networkConfig.rpcUrl);
   const pool = new ethers.Contract(networkConfig.poolContract, POOL_ABI, provider);
@@ -85,28 +86,31 @@ export async function fetchLiquidationsFromRPC(
   const blocksCovered = chunkCount * chunkSize;
   const isPartial = blocksCovered < totalBlocksNeeded;
 
-  if (allEvents.length === 0) return { results: [], isPartial };
+  // Filter by liquidator client-side (not an indexed event param)
+  const filteredEvents = liquidatorAddress
+    ? allEvents.filter((e) => e.args[5].toLowerCase() === liquidatorAddress.toLowerCase())
+    : allEvents;
+
+  if (filteredEvents.length === 0) return { results: [], isPartial };
 
   // Resolve unique token info — 2 calls per unique token (cached across searches)
   const uniqueTokens = new Set();
-  for (const event of allEvents) {
+  for (const event of filteredEvents) {
     uniqueTokens.add(event.args[0]);
     uniqueTokens.add(event.args[1]);
   }
-  for (const addr of uniqueTokens) {
-    await getTokenInfo(provider, addr);
-  }
+  await Promise.all([...uniqueTokens].map((addr) => getTokenInfo(provider, addr)));
 
-  // Resolve unique block timestamps — 1 call per unique block
+  // Resolve unique block timestamps — all in parallel
+  const uniqueBlocks = [...new Set(filteredEvents.map((e) => e.blockNumber))];
+  const blockResults = await Promise.all(uniqueBlocks.map((n) => provider.getBlock(n)));
   const blockTimestamps = {};
-  const uniqueBlocks = [...new Set(allEvents.map((e) => e.blockNumber))];
-  for (const blockNum of uniqueBlocks) {
-    const block = await provider.getBlock(blockNum);
-    blockTimestamps[blockNum] = block ? block.timestamp : 0;
-  }
+  uniqueBlocks.forEach((n, i) => {
+    blockTimestamps[n] = blockResults[i] ? blockResults[i].timestamp : 0;
+  });
 
   // Build results — no additional RPC calls
-  const results = allEvents.map((event) => {
+  const results = filteredEvents.map((event) => {
     const collateralAsset = event.args[0];
     const debtAsset = event.args[1];
     const user = event.args[2];
