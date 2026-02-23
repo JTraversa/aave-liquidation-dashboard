@@ -1,6 +1,7 @@
 {
   "rewrites": [
     { "source": "/aave", "destination": "/index.html" },
-    { "source": "/aave/assets/:path*", "destination": "/assets/:path*" }
+    { "source": "/aave/", "destination": "/index.html" },
+    { "source": "/aave/:path*", "destination": "/:path*" }
   ]
 }
