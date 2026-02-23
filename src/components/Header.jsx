@@ -7,6 +7,13 @@ export default function Header() {
   return (
     <header className="header">
       <div className="header-left">
+        <nav className="header-nav">
+          <a href="/" className="nav-link">Home</a>
+          <span className="nav-sep">/</span>
+          <a href="/tools" className="nav-link">Tools</a>
+          <span className="nav-sep">/</span>
+          <a href="/rpc" className="nav-link">RPC Benchmark</a>
+        </nav>
         <h1>Aave V3 Liquidation Dashboard</h1>
       </div>
       <button
