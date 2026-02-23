@@ -156,13 +156,14 @@ select:focus {
 }
 
 .btn-primary {
-  background: transparent;
-  color: var(--accent);
-  border: 2px solid var(--accent);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: transparent;
+  border-color: var(--accent);
+  color: var(--accent);
   box-shadow: 4px 4px 0px var(--accent);
   transform: translate(-2px, -2px);
 }
