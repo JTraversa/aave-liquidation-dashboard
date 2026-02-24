@@ -13,6 +13,12 @@
     margin: 0;
 }
 
+.stick_follow_icon a,
+.stick_follow_icon a:hover {
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
 .stick_follow_icon svg {
     width: 1.3em;
     height: 1.3em;
