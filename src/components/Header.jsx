@@ -8,7 +8,7 @@ const menuLinks = [
   { label: 'Investments', href: 'https://traversa.dev/investments' },
   { label: 'Photography', href: 'https://traversa.dev/photography' },
   { label: 'Research', href: 'https://traversa.dev/research' },
-  { label: 'Tools', href: 'https://traversa.dev/tools' },
+  { label: 'Tools', href: 'https://tools.traversa.dev' },
 ];
 
 const toolLinks = [
