@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Settings from './Settings';
+import ThemeToggle from './ThemeToggle';
 
 const menuLinks = [
   { label: 'Home', href: '/' },
@@ -26,7 +27,9 @@ export default function Header() {
   return (
     <>
       <header className="site-header">
-        <button className="menu-toggle" onClick={toggleMenu}>
+        <div className="header-left">
+          <ThemeToggle />
+          <button className="menu-toggle" onClick={toggleMenu}>
           {menuOpen ? (
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="18" y1="6" x2="6" y2="18" />
@@ -40,6 +43,7 @@ export default function Header() {
             </svg>
           )}
         </button>
+        </div>
         <button
           className="settings-btn"
           onClick={() => setShowSettings(true)}

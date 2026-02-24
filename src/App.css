@@ -65,6 +65,35 @@
   z-index: 1000;
 }
 
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.theme-toggle {
+  background: var(--bg-secondary);
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 5px 15px;
+  font-size: 1.25rem;
+  font-family: 'Marcellus', serif;
+  line-height: 2;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  z-index: 1000;
+}
+
+.theme-toggle svg {
+  width: 1.5em;
+  height: 1.5em;
+}
+
+.theme-toggle:hover {
+  color: var(--text-primary);
+}
+
 .menu-toggle {
   background: var(--bg-secondary);
   border: none;
@@ -536,7 +565,7 @@ select:focus {
 }
 
 .liquidation-table tbody tr:hover {
-  background: rgba(204, 0, 0, 0.04);
+  background: rgba(80, 120, 190, 0.06);
 }
 
 .liquidation-table .number {

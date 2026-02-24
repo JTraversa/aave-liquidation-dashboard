@@ -13,8 +13,8 @@
   --border: rgba(255,255,255,0.12);
   --text-primary: #fff;
   --text-secondary: rgba(255,255,255,0.5);
-  --accent: rgb(204, 0, 0);
-  --accent-hover: rgb(230, 30, 30);
+  --accent: rgb(80, 120, 190);
+  --accent-hover: rgb(105, 145, 215);
   --error: #f85149;
   --success: #3fb950;
   --warning: #d29922;
@@ -27,6 +27,20 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+[data-theme="light"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f5f5f5;
+  --border: rgba(0,0,0,0.12);
+  --text-primary: #000;
+  --text-secondary: rgba(0,0,0,0.5);
+  --accent: rgb(80, 120, 190);
+  --accent-hover: rgb(105, 145, 215);
+  --error: #d32f2f;
+  --success: #2e7d32;
+  --warning: #ed6c02;
 }
 
 body {
