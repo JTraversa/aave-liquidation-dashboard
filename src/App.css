@@ -154,11 +154,11 @@
 .nav-menu-item a {
   color: var(--text-primary);
   font-family: 'Marcellus', serif;
-  font-size: 2rem;
+  font-size: 1.1rem;
   line-height: 1;
   display: inline-block;
   padding: 4px 0;
-  margin: 10px 0;
+  margin: 8px 0;
   text-decoration: none;
   transition: color 250ms cubic-bezier(0, 0, 0.58, 1);
 }
@@ -216,7 +216,7 @@
 
 @media (min-width: 768px) {
   .nav-menu-item a {
-    font-size: 4.8vw;
+    font-size: 1.25rem;
   }
 }
 
