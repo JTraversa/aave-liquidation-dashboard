@@ -3,6 +3,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding: 10px;
 }
 
 .main {
@@ -10,65 +11,213 @@
   width: 100%;
   margin: 0 auto;
   padding: 1.5rem;
+  padding-top: 70px;
+}
+
+/* Border Frame */
+.br-top,
+.br-bottom,
+.br-right,
+.br-left {
+  position: fixed;
+  z-index: 999999;
+  background: var(--bg-secondary);
+}
+
+.br-top {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 10px;
+}
+
+.br-bottom {
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 10px;
+}
+
+.br-right {
+  width: 10px;
+  right: 0;
+  top: 0;
+  height: 100%;
+}
+
+.br-left {
+  width: 10px;
+  left: 0;
+  top: 0;
+  height: 100%;
 }
 
 /* Header */
-.header {
+.site-header {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  right: 10px;
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  padding: 1rem 1.5rem;
+  padding: 0 0.5rem;
+  z-index: 1000;
+}
+
+.menu-toggle {
   background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border);
-}
-
-.header-nav {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin-bottom: 0.35rem;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.nav-link {
-  color: var(--text-secondary);
-  transition: color 0.3s cubic-bezier(0.55, 0, 0.1, 1);
-}
-
-.nav-link:hover {
-  color: var(--accent);
-  text-decoration: none;
-}
-
-.nav-sep {
-  color: var(--text-secondary);
-  opacity: 0.4;
-}
-
-.header h1 {
-  font-family: 'Marcellus', serif;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 5px 15px;
   font-size: 1.25rem;
-  font-weight: 600;
+  font-family: 'Marcellus', serif;
+  line-height: 2;
+  height: 50px;
+  z-index: 1000;
+}
+
+.menu-toggle:hover {
+  color: var(--text-primary);
 }
 
 .settings-btn {
-  background: transparent;
-  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  border: none;
   color: var(--text-secondary);
-  padding: 0.4rem 0.8rem;
+  padding: 5px 15px;
   border-radius: 0;
   cursor: pointer;
   font-size: 0.875rem;
-  transition: all 0.3s cubic-bezier(0.55, 0, 0.1, 1);
+  font-family: 'Marcellus', serif;
+  line-height: 2;
+  height: 50px;
+  z-index: 1000;
+  transition: color 0.3s cubic-bezier(0.55, 0, 0.1, 1);
 }
 
 .settings-btn:hover {
   color: var(--text-primary);
-  border-color: var(--text-secondary);
-  box-shadow: 4px 4px 0px var(--accent);
-  transform: translate(-2px, -2px);
+}
+
+/* Full-screen Navigation */
+.site-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  visibility: hidden;
+  overflow: hidden;
+  z-index: 999;
+}
+
+.site-nav.nav-open {
+  visibility: visible;
+}
+
+.nav-bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-secondary);
+  transform: translateY(-100%);
+  transition: 0.5s ease all;
+}
+
+.nav-open .nav-bg {
+  transform: translateY(0);
+}
+
+.nav-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden auto;
+}
+
+.nav-container {
+  padding: 1rem;
+}
+
+.nav-menu {
+  list-style: none;
+  padding-top: 15vh;
+  padding-bottom: 15vh;
+  padding-left: 0;
+  margin: 0;
+}
+
+.nav-menu-item a {
+  color: var(--text-primary);
+  font-family: 'Marcellus', serif;
+  font-size: 2rem;
+  line-height: 1;
+  display: inline-block;
+  padding: 4px 0;
+  margin: 10px 0;
+  text-decoration: none;
+  transition: color 250ms cubic-bezier(0, 0, 0.58, 1);
+}
+
+.nav-menu-item a:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.nav-menu-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 1.5rem 0;
+}
+
+.nav-footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  font-family: 'Marcellus', serif;
+  font-size: 14px;
+}
+
+.nav-footer-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-footer-links a {
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.nav-footer-links a:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.ovhidden {
+  overflow: hidden;
+}
+
+@media (min-width: 500px) {
+  .nav-container {
+    margin-left: 33.3333%;
+  }
+
+  .nav-menu {
+    padding-top: 10vh;
+    padding-bottom: 10vh;
+  }
+}
+
+@media (min-width: 768px) {
+  .nav-menu-item a {
+    font-size: 4.8vw;
+  }
 }
 
 /* Search Form */
@@ -520,8 +669,8 @@ select:focus {
     min-width: 100%;
   }
 
-  .header h1 {
-    font-size: 1rem;
+  .site-header {
+    padding: 0 0.25rem;
   }
 
   .stats-bar {

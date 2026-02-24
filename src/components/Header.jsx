@@ -1,29 +1,89 @@
 import { useState } from 'react';
 import Settings from './Settings';
 
+const menuLinks = [
+  { label: 'Home', href: '/' },
+  { label: 'About', href: '/about' },
+  { label: 'Investments', href: '/investments' },
+  { label: 'Photography', href: '/photography' },
+  { label: 'Research', href: '/research' },
+  { label: 'Tools', href: '/tools' },
+];
+
+const toolLinks = [
+  { label: 'RPC Benchmark', href: '/rpc' },
+];
+
 export default function Header() {
+  const [menuOpen, setMenuOpen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+    document.body.classList.toggle('ovhidden');
+  };
+
   return (
-    <header className="header">
-      <div className="header-left">
-        <nav className="header-nav">
-          <a href="/" className="nav-link">Home</a>
-          <span className="nav-sep">/</span>
-          <a href="/tools" className="nav-link">Tools</a>
-          <span className="nav-sep">/</span>
-          <a href="/rpc" className="nav-link">RPC Benchmark</a>
-        </nav>
-        <h1>Aave V3 Liquidation Dashboard</h1>
+    <>
+      <header className="site-header">
+        <button className="menu-toggle" onClick={toggleMenu}>
+          {menuOpen ? (
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          ) : (
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          )}
+        </button>
+        <button
+          className="settings-btn"
+          onClick={() => setShowSettings(true)}
+          title="Settings"
+        >
+          Settings
+        </button>
+      </header>
+
+      <div className={`site-nav${menuOpen ? ' nav-open' : ''}`}>
+        <div className="nav-bg">
+          <div className="nav-wrapper">
+            <div className="nav-container">
+              <ul className="nav-menu">
+                {menuLinks.map(({ label, href }) => (
+                  <li key={href} className="nav-menu-item">
+                    <a href={href} onClick={toggleMenu}>{label}</a>
+                  </li>
+                ))}
+                <li className="nav-menu-divider" />
+                {toolLinks.map(({ label, href }) => (
+                  <li key={href} className="nav-menu-item">
+                    <a href={href} onClick={toggleMenu}>{label}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <div className="nav-footer">
+            <div className="nav-footer-links">
+              <a href="https://github.com/jtraversa">Github</a>
+              <a href="https://www.linkedin.com/in/juliant94/">LinkedIn</a>
+              <a href="https://twitter.com/TraversaJulian">Twitter</a>
+            </div>
+          </div>
+        </div>
       </div>
-      <button
-        className="settings-btn"
-        onClick={() => setShowSettings(true)}
-        title="Settings"
-      >
-        Settings
-      </button>
+
+      <div className="br-top" />
+      <div className="br-bottom" />
+      <div className="br-left" />
+      <div className="br-right" />
+
       {showSettings && <Settings onClose={() => setShowSettings(false)} />}
-    </header>
+    </>
   );
 }
