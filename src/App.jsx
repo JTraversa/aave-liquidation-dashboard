@@ -1,4 +1,5 @@
 import Header from './components/Header';
+import Socialicons from './components/Socialicons';
 import SearchForm from './components/SearchForm';
 import StatsBar from './components/StatsBar';
 import LiquidationTable from './components/LiquidationTable';
@@ -11,6 +12,7 @@ function App() {
   return (
     <div className="app">
       <Header />
+      <Socialicons />
       <main className="main">
         <SearchForm onSearch={search} loading={loading} />
         {loading && (

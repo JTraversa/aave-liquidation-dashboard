@@ -45,6 +45,25 @@
 
 body {
   min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: visible;
+  padding-top: 60px;
+  border-left: 200px solid var(--bg-secondary);
+  border-right: 10px solid var(--bg-secondary);
+}
+
+@media screen and (max-width: 991px) {
+  body {
+    border-left: 50px solid var(--bg-secondary);
+    border-top: 75px solid var(--bg-secondary);
+  }
+}
+
+@media screen and (max-width: 600px) {
+  body {
+    border-left: 0;
+    border-top: 75px solid var(--bg-secondary);
+  }
 }
 
 a {
