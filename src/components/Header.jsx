@@ -3,12 +3,12 @@ import Settings from './Settings';
 import ThemeToggle from './ThemeToggle';
 
 const menuLinks = [
-  { label: 'Home', href: '/' },
-  { label: 'About', href: '/about' },
-  { label: 'Investments', href: '/investments' },
-  { label: 'Photography', href: '/photography' },
-  { label: 'Research', href: '/research' },
-  { label: 'Tools', href: '/tools' },
+  { label: 'Home', href: 'https://traversa.dev' },
+  { label: 'About', href: 'https://traversa.dev/about' },
+  { label: 'Investments', href: 'https://traversa.dev/investments' },
+  { label: 'Photography', href: 'https://traversa.dev/photography' },
+  { label: 'Research', href: 'https://traversa.dev/research' },
+  { label: 'Tools', href: 'https://traversa.dev/tools' },
 ];
 
 const toolLinks = [
