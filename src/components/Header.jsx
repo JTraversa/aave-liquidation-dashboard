@@ -8,11 +8,12 @@ const menuLinks = [
   { label: 'Investments', href: 'https://traversa.dev/investments' },
   { label: 'Photography', href: 'https://traversa.dev/photography' },
   { label: 'Research', href: 'https://traversa.dev/research' },
-  { label: 'Tools', href: 'https://tools.traversa.dev' },
 ];
 
 const toolLinks = [
-  { label: 'RPC Benchmark', href: '/rpc' },
+  { label: 'Tools', href: 'https://tools.traversa.dev' },
+  { label: 'Aave Liquidations', href: '/', indent: true },
+  { label: 'RPC Benchmark', href: 'https://tools.traversa.dev/rpc', indent: true },
 ];
 
 export default function Header() {
@@ -63,8 +64,8 @@ export default function Header() {
                   </li>
                 ))}
                 <li className="nav-menu-divider" />
-                {toolLinks.map(({ label, href }) => (
-                  <li key={href} className="nav-menu-item">
+                {toolLinks.map(({ label, href, indent }) => (
+                  <li key={label} className={`nav-menu-item${indent ? ' nav-tool-item' : ''}`}>
                     <a href={href} onClick={toggleMenu}>{label}</a>
                   </li>
                 ))}

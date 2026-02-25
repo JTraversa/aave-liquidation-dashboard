@@ -232,6 +232,10 @@
   margin: 1.5rem 0;
 }
 
+.nav-tool-item {
+  padding-left: 1.5rem;
+}
+
 .nav-footer {
   position: absolute;
   bottom: 0;
