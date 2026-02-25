@@ -14,6 +14,12 @@ function App() {
       <Header />
       <Socialicons />
       <main className="main">
+        <div className="page-intro">
+          <h1>Aave V3 Liquidation Dashboard</h1>
+          <p>
+            Search and analyze liquidation events across Aave V3 markets. Select a network, set a date range, and optionally filter by liquidated user or liquidator address. For complete data with USD pricing, add a free <a href="https://thegraph.com/studio/" target="_blank" rel="noopener noreferrer">Graph API key</a> via Settings.
+          </p>
+        </div>
         <SearchForm onSearch={search} loading={loading} />
         {loading && (
           <div className="loading">
