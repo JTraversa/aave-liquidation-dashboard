@@ -133,11 +133,14 @@
 .menu-toggle svg {
   width: 2em;
   height: 2em;
+  fill: var(--text-primary);
   color: var(--text-primary);
 }
 
+.menu-toggle:focus,
 .menu-toggle:hover {
   color: var(--text-primary);
+  box-shadow: unset;
 }
 
 .settings-btn {

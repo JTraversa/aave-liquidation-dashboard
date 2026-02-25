@@ -32,14 +32,12 @@ export default function Header() {
           <ThemeToggle />
           <button className="menu-toggle" onClick={toggleMenu}>
           {menuOpen ? (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
+            <svg viewBox="0 0 16 16" fill="currentColor">
+              <path fillRule="evenodd" clipRule="evenodd" d="M8 8.707l3.646 3.647.708-.707L8.707 8l3.647-3.646-.707-.708L8 7.293 4.354 3.646l-.707.708L7.293 8l-3.646 3.646.707.708L8 8.707z" />
             </svg>
           ) : (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="3" y1="9" x2="21" y2="9" />
-              <line x1="3" y1="15" x2="21" y2="15" />
+            <svg viewBox="0 0 16 16" fill="currentColor">
+              <path fillRule="evenodd" clipRule="evenodd" d="M15 6H1v1h14V6zm0 3H1v1h14V9z" />
             </svg>
           )}
         </button>
