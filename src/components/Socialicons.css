@@ -20,8 +20,8 @@
 }
 
 .stick_follow_icon svg {
-    width: 1.3em;
-    height: 1.3em;
+    width: 1em;
+    height: 1em;
     fill: var(--text-primary);
 }
 
