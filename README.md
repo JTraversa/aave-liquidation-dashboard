@@ -8,10 +8,6 @@ Search and analyze Aave V3 liquidation events across multiple networks with real
 
 - **Multi-network support** - Query liquidations across 13 chains: Ethereum, Arbitrum, Polygon, Optimism, Avalanche, Base, BNB Chain, Gnosis, Scroll, zkSync Era, Linea, and Metis
 - **Flexible search** - Filter by date range, liquidated user address, or liquidator address
-- **Statistics bar** - Total liquidations, collateral seized, debt repaid, and largest liquidation at a glance
-- **Sortable table** - Sort by any column with pagination (50 per page)
-- **Explorer links** - Direct links to transactions and addresses on each chain's block explorer
-- **Dark/light theme** - Toggle with system preference detection
 
 ## Data Sources
 
