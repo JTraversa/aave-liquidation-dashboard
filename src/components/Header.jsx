@@ -13,7 +13,7 @@ const menuLinks = [
 const toolLinks = [
   { label: 'Tools', href: 'https://tools.traversa.dev' },
   { label: 'Aave Liquidation Search', href: '/', indent: true },
-  { label: 'AWS Spot Price Dashboard', href: 'https://tools.traversa.dev/aws', indent: true },
+  { label: 'AWS Historic Data', href: 'https://tools.traversa.dev/aws', indent: true },
   { label: 'Epoch & Block Converter', href: 'https://tools.traversa.dev/epoch', indent: true },
   { label: 'License Generator', href: 'https://tools.traversa.dev/license', indent: true },
   { label: 'RPC Benchmarking', href: 'https://tools.traversa.dev/rpc', indent: true },
