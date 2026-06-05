@@ -15,11 +15,11 @@ export const NETWORKS = {
     chainId: 42161,
     subgraphId: 'DLuE98kEb5pQNXAcKFQGQgfSQ57Xdou4jnVbAEqMfy3B',
     poolContract: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
-    rpcUrl: 'https://arbitrum-one-rpc.publicnode.com',
+    rpcUrl: 'https://arb1.arbitrum.io/rpc',
     explorerUrl: 'https://arbiscan.io',
     startBlock: 7742429,
     avgBlockTime: 0.25,
-    maxLogRange: 10000,
+    maxLogRange: 2000000,
   },
   polygon: {
     name: 'Polygon',

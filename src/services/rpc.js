@@ -84,7 +84,7 @@ export async function fetchLiquidationsFromRPC(
       start += chunkSize;
     } catch (err) {
       // If the RPC rejects the block range, halve the chunk size and retry
-      if (chunkSize > 500 && /block range|range.*too|too many|limit/i.test(String(err))) {
+      if (chunkSize > 500 && /block range|range.*too|too many|limit|timed out|timeout/i.test(String(err))) {
         chunkSize = Math.floor(chunkSize / 2);
         continue;
       }
