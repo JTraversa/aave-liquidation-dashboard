@@ -37,7 +37,11 @@ function estimateBlockForTimestamp(latestBlock, latestTimestamp, targetTimestamp
   const secondsDiff = latestTimestamp - targetTimestamp;
   const blocksDiff = Math.floor(secondsDiff / avgBlockTime);
   const estimated = latestBlock - blocksDiff;
-  return Math.max(0, estimated);
+  // Clamp to the head as well as to 0. An end date of "today" sits slightly in
+  // the future, so the estimate lands past the tip; strict providers reject
+  // that outright with "block range extends beyond current head block", while
+  // laxer ones silently clamp.
+  return Math.min(latestBlock, Math.max(0, estimated));
 }
 
 export async function fetchLiquidationsFromRPC(
