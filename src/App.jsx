@@ -1,5 +1,6 @@
 import Header from './components/Header';
 import Socialicons from './components/Socialicons';
+import RepoLink from './components/RepoLink';
 import SearchForm from './components/SearchForm';
 import StatsBar from './components/StatsBar';
 import LiquidationTable from './components/LiquidationTable';
@@ -19,6 +20,7 @@ function App() {
           <p>
             Search and analyze liquidation events across Aave V3 markets. Select a network, set a date range, and optionally filter by liquidated user or liquidator address. For complete data with USD pricing, add a free <a href="https://thegraph.com/studio/" target="_blank" rel="noopener noreferrer">Graph API key</a> via Settings.
           </p>
+          <RepoLink />
         </div>
         <SearchForm onSearch={search} loading={loading} />
         {loading && (
