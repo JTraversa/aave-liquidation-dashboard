@@ -1,6 +1,8 @@
-# Aave V3 Liquidation Dashboard
+# Aave Liquidation Dashboard
 
-Search and analyze Aave V3 liquidation events across multiple networks with real-time USD pricing.
+Search and analyze Aave V3 and V4 liquidation events across multiple networks.
+
+V3 is covered on 12 networks, with USD pricing when a Graph API key is supplied. V4, live on Ethereum since 30 March 2026, is covered via RPC: it has no published subgraph yet, so no USD pricing.
 
 **Live:** [tools.traversa.dev/aave](https://tools.traversa.dev/aave)
 
@@ -13,7 +15,7 @@ Search and analyze Aave V3 liquidation events across multiple networks with real
 
 The dashboard uses a two-tier fetching strategy:
 
-1. **The Graph (primary)** - Queries Aave V3 subgraphs for complete data including USD prices. Requires a free API key from [Subgraph Studio](https://thegraph.com/studio/).
+1. **The Graph (primary, V3 only)** - Queries Aave V3 subgraphs for complete data including USD prices. Requires a free API key from [Subgraph Studio](https://thegraph.com/studio/).
 2. **Direct RPC (fallback)** - Queries on-chain event logs directly. Uses intelligent block estimation and chunked queries to minimize RPC calls. USD values are unavailable in this mode.
 
 Configure your Graph API key via the Settings button in the header.

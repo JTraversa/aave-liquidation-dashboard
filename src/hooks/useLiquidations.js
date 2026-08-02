@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
-import { NETWORKS } from '../config/networks';
+import { getNetwork } from '../config/networks';
 import { fetchLiquidationsFromSubgraph } from '../services/subgraph';
-import { fetchLiquidationsFromRPC } from '../services/rpc';
+import { fetchLiquidationsFromRPC, fetchV4LiquidationsFromRPC } from '../services/rpc';
 
 export function useLiquidations() {
   const [data, setData] = useState([]);
@@ -10,17 +10,43 @@ export function useLiquidations() {
   const [source, setSource] = useState(null);
   const [warning, setWarning] = useState(null);
 
-  const search = useCallback(async ({ networkKey, startTimestamp, endTimestamp, userAddress, liquidatorAddress }) => {
+  const search = useCallback(async ({ version = 'v3', networkKey, startTimestamp, endTimestamp, userAddress, liquidatorAddress }) => {
     setLoading(true);
     setError(null);
     setWarning(null);
     setData([]);
     setSource(null);
 
-    const network = NETWORKS[networkKey];
+    const network = getNetwork(version, networkKey);
     if (!network) {
       setError('Invalid network selected.');
       setLoading(false);
+      return;
+    }
+
+    // v4 has no published subgraph, so it goes straight to RPC. That also means
+    // no USD pricing, which the table already handles for the v3 RPC fallback.
+    if (version === 'v4') {
+      try {
+        const { results, isPartial } = await fetchV4LiquidationsFromRPC(
+          network,
+          startTimestamp,
+          endTimestamp,
+          userAddress,
+          liquidatorAddress
+        );
+        setData(results);
+        setSource('rpc');
+        if (isPartial) {
+          setWarning(
+            'RPC results are partial — the date range exceeds what free public RPCs can scan in one pass. Narrow the date range for complete results.'
+          );
+        }
+      } catch (err) {
+        setError(`Failed to fetch liquidations: ${err.message}`);
+      } finally {
+        setLoading(false);
+      }
       return;
     }
 

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ethers } from 'ethers';
 import NetworkSelector from './NetworkSelector';
 import { dateToTimestamp } from '../utils/formatting';
-import { getMaxDateRangeDays } from '../config/networks';
+import { getMaxDateRangeDays, getNetworks, PROTOCOL_VERSIONS } from '../config/networks';
 
 function clampStartDate(endDate, maxDays) {
   const end = new Date(endDate);
@@ -11,9 +11,9 @@ function clampStartDate(endDate, maxDays) {
   return earliest.toISOString().split('T')[0];
 }
 
-function getDefaultDates(networkKey) {
+function getDefaultDates(networkKey, version = 'v3') {
   const end = new Date();
-  const maxDays = getMaxDateRangeDays(networkKey);
+  const maxDays = getMaxDateRangeDays(networkKey, version);
   const daysBack = Math.min(7, Math.floor(maxDays));
   const start = new Date();
   start.setDate(start.getDate() - daysBack);
@@ -25,6 +25,7 @@ function getDefaultDates(networkKey) {
 
 export default function SearchForm({ onSearch, loading }) {
   const defaults = getDefaultDates('ethereum');
+  const [version, setVersion] = useState('v3');
   const [network, setNetwork] = useState('ethereum');
   const [startDate, setStartDate] = useState(defaults.start);
   const [endDate, setEndDate] = useState(defaults.end);
@@ -34,19 +35,32 @@ export default function SearchForm({ onSearch, loading }) {
   const [liquidatorError, setLiquidatorError] = useState('');
   const [dateError, setDateError] = useState('');
 
-  const maxDays = getMaxDateRangeDays(network);
+  const maxDays = getMaxDateRangeDays(network, version);
   const maxDaysLabel = maxDays > 365 ? null : `${Math.floor(maxDays)}d`;
 
   function handleNetworkChange(key) {
     setNetwork(key);
     setDateError('');
-    const newMax = getMaxDateRangeDays(key);
+    const newMax = getMaxDateRangeDays(key, version);
     // If current range exceeds the new network's limit, clamp the start date
     if (startDate && endDate) {
       const diffDays = (new Date(endDate) - new Date(startDate)) / 86400000;
       if (diffDays > newMax) {
         setStartDate(clampStartDate(endDate, newMax));
       }
+    }
+  }
+
+  function handleVersionChange(nextVersion) {
+    setVersion(nextVersion);
+    setDateError('');
+    const available = Object.keys(getNetworks(nextVersion));
+    const nextNetwork = available.includes(network) ? network : available[0];
+    setNetwork(nextNetwork);
+    const newMax = getMaxDateRangeDays(nextNetwork, nextVersion);
+    if (startDate && endDate) {
+      const diffDays = (new Date(endDate) - new Date(startDate)) / 86400000;
+      if (diffDays > newMax) setStartDate(clampStartDate(endDate, newMax));
     }
   }
 
@@ -79,6 +93,7 @@ export default function SearchForm({ onSearch, loading }) {
     setLiquidatorError('');
 
     onSearch({
+      version,
       networkKey: network,
       startTimestamp: dateToTimestamp(startDate),
       endTimestamp: dateToTimestamp(endDate + 'T23:59:59'),
@@ -91,8 +106,21 @@ export default function SearchForm({ onSearch, loading }) {
     <form className="search-form" onSubmit={handleSubmit}>
       <div className="form-row">
         <div className="form-group">
+          <label htmlFor="version">Protocol</label>
+          <select
+            id="version"
+            className="network-select"
+            value={version}
+            onChange={(e) => handleVersionChange(e.target.value)}
+          >
+            {PROTOCOL_VERSIONS.map(({ key, label }) => (
+              <option key={key} value={key}>{label}</option>
+            ))}
+          </select>
+        </div>
+        <div className="form-group">
           <label htmlFor="network">Network</label>
-          <NetworkSelector value={network} onChange={handleNetworkChange} />
+          <NetworkSelector value={network} version={version} onChange={handleNetworkChange} />
         </div>
         <div className="form-group">
           <label htmlFor="start-date">

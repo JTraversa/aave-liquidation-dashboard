@@ -133,11 +133,47 @@ export const NETWORKS = {
   },
 };
 
+// Aave v4, live on Ethereum since 2026-03-30. Deliberately has no
+// `poolContract`: v4 replaced v3's single Pool with a hub-and-spoke layout, so
+// LiquidationCall is emitted by whichever Spoke held the position, and there
+// are many. Rather than hardcode a spoke list that would silently go stale as
+// new ones are listed, the RPC layer filters on the event topic alone and
+// picks up every spoke. (The docs' published list is already incomplete: a
+// scan of recent logs turned up 0x65407b94... emitting liquidations while not
+// appearing among the documented spokes.)
+export const NETWORKS_V4 = {
+  ethereum: {
+    name: 'Ethereum',
+    chainId: 1,
+    // No v4 subgraph published yet, so v4 is RPC-only and has no USD pricing.
+    subgraphId: null,
+    rpcUrl: 'https://gateway.tenderly.co/public/mainnet',
+    explorerUrl: 'https://etherscan.io',
+    // Block at 2026-03-30T00:00:11Z. All known spokes already had code here.
+    startBlock: 24766692,
+    avgBlockTime: 12,
+    maxLogRange: 50000,
+  },
+};
+
+export const PROTOCOL_VERSIONS = [
+  { key: 'v3', label: 'Aave V3' },
+  { key: 'v4', label: 'Aave V4' },
+];
+
+export function getNetworks(version) {
+  return version === 'v4' ? NETWORKS_V4 : NETWORKS;
+}
+
+export function getNetwork(version, networkKey) {
+  return getNetworks(version)[networkKey] || null;
+}
+
 export const MAX_RPC_CHUNKS = 40;
 
 /** Max queryable date range in days for RPC mode on a given network. */
-export function getMaxDateRangeDays(networkKey) {
-  const net = NETWORKS[networkKey];
+export function getMaxDateRangeDays(networkKey, version = 'v3') {
+  const net = getNetwork(version, networkKey);
   if (!net) return Infinity;
   const seconds = net.maxLogRange * MAX_RPC_CHUNKS * net.avgBlockTime;
   return seconds / 86400;
