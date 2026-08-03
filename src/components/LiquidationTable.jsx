@@ -68,7 +68,13 @@ export default function LiquidationTable({ data, source }) {
         <div className="source-badge">
           Data source: <strong>{source === 'subgraph' ? 'The Graph' : 'RPC'}</strong>
           {source === 'rpc' && (
-            <span className="source-note"> (USD values unavailable via RPC)</span>
+            // USD no longer comes from the subgraph in RPC mode, so say where it
+            // does come from. Rows that could not be priced still show a dash.
+            <span className="source-note">
+              {data.some((row) => row.collateralValueUSD || row.debtValueUSD)
+                ? ' (USD prices via DefiLlama)'
+                : ' (USD values unavailable)'}
+            </span>
           )}
           <span className="result-count">{data.length} result{data.length !== 1 ? 's' : ''}</span>
         </div>

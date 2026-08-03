@@ -2,6 +2,8 @@ export const NETWORKS = {
   ethereum: {
     name: 'Ethereum',
     chainId: 1,
+    // DefiLlama chain slug, for historical USD pricing.
+    priceChain: 'ethereum',
     subgraphId: 'Cd2gEDVeqnjBn1hSeqFMitw8Q1iiyV9FYUZkLNRcL87g',
     poolContract: '0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2',
     rpcUrl: 'https://gateway.tenderly.co/public/mainnet',
@@ -13,6 +15,8 @@ export const NETWORKS = {
   arbitrum: {
     name: 'Arbitrum',
     chainId: 42161,
+    // DefiLlama chain slug, for historical USD pricing.
+    priceChain: 'arbitrum',
     subgraphId: 'DLuE98kEb5pQNXAcKFQGQgfSQ57Xdou4jnVbAEqMfy3B',
     poolContract: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
     rpcUrl: 'https://arb1.arbitrum.io/rpc',
@@ -24,6 +28,8 @@ export const NETWORKS = {
   polygon: {
     name: 'Polygon',
     chainId: 137,
+    // DefiLlama chain slug, for historical USD pricing.
+    priceChain: 'polygon',
     subgraphId: 'Co2URyXjnxaw8WqxKyVHdirq9Ahhm5vcTs4dMedAq211',
     poolContract: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
     rpcUrl: 'https://gateway.tenderly.co/public/polygon',
@@ -35,6 +41,8 @@ export const NETWORKS = {
   optimism: {
     name: 'Optimism',
     chainId: 10,
+    // DefiLlama chain slug, for historical USD pricing.
+    priceChain: 'optimism',
     subgraphId: 'DSfLz8oQBUeU5atALgUFQKMTSYV9mZAVYp4noLSXAfvb',
     poolContract: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
     rpcUrl: 'https://gateway.tenderly.co/public/optimism',
@@ -46,6 +54,8 @@ export const NETWORKS = {
   avalanche: {
     name: 'Avalanche',
     chainId: 43114,
+    // DefiLlama chain slug, for historical USD pricing.
+    priceChain: 'avax',
     subgraphId: '2h9woxy8RTjHu1HJsCEnmzpPHFArU33avmUh4f71JpVn',
     poolContract: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
     rpcUrl: 'https://gateway.tenderly.co/public/avalanche',
@@ -57,6 +67,8 @@ export const NETWORKS = {
   base: {
     name: 'Base',
     chainId: 8453,
+    // DefiLlama chain slug, for historical USD pricing.
+    priceChain: 'base',
     subgraphId: 'GQFbb95cE6d8mV989mL5figjaGaKCQB3xqYrr1bRyXqF',
     poolContract: '0xA238Dd80C259a72e81d7e4664a9801593F98d1c5',
     rpcUrl: 'https://gateway.tenderly.co/public/base',
@@ -68,6 +80,8 @@ export const NETWORKS = {
   bnb: {
     name: 'BNB Chain',
     chainId: 56,
+    // DefiLlama chain slug, for historical USD pricing.
+    priceChain: 'bsc',
     subgraphId: '7Jk85XgkV1MQ7u56hD8rr65rfASbayJXopugWkUoBMnZ',
     poolContract: '0x6807dc923806fE8Fd134338EABCA509979a7e0cB',
     rpcUrl: 'https://bsc.lava.build',
@@ -79,6 +93,8 @@ export const NETWORKS = {
   gnosis: {
     name: 'Gnosis',
     chainId: 100,
+    // DefiLlama chain slug, for historical USD pricing.
+    priceChain: 'xdai',
     subgraphId: 'HtcDaL8L8iZ2KQNNS44EBVmLruzxuNAz1RkBYdui1QUT',
     poolContract: '0xb50201558B00496A145fE76f7424749556E326D8',
     rpcUrl: 'https://rpc.gnosischain.com',
@@ -90,6 +106,8 @@ export const NETWORKS = {
   scroll: {
     name: 'Scroll',
     chainId: 534352,
+    // DefiLlama chain slug, for historical USD pricing.
+    priceChain: 'scroll',
     subgraphId: '74JwenoHZb2aAYVGCCSdPWzi9mm745dyHyQQVoZ7Sbub',
     poolContract: '0x11fCfe756c05AD438e312a7fd934381537D3cFfe',
     rpcUrl: 'https://rpc.scroll.io',
@@ -101,6 +119,8 @@ export const NETWORKS = {
   zksync: {
     name: 'zkSync Era',
     chainId: 324,
+    // DefiLlama chain slug, for historical USD pricing.
+    priceChain: 'era',
     subgraphId: 'ENYSc8G3WvrbhWH8UZHrqPWYRcuyCaNmaTmoVp7uzabM',
     poolContract: '0x78e30497a3c7527d953c6B1E3541b021A98Ac43c',
     rpcUrl: 'https://mainnet.era.zksync.io',
@@ -112,6 +132,8 @@ export const NETWORKS = {
   linea: {
     name: 'Linea',
     chainId: 59144,
+    // DefiLlama chain slug, for historical USD pricing.
+    priceChain: 'linea',
     subgraphId: 'Gz2kjnmRV1fQj3R8cssoZa5y9VTanhrDo4Mh7nWW1wHa',
     poolContract: '0xc47b8C00b0f69a36fa203Ffeac0334874574a8Ac',
     rpcUrl: 'https://rpc.linea.build',
@@ -123,6 +145,8 @@ export const NETWORKS = {
   metis: {
     name: 'Metis',
     chainId: 1088,
+    // DefiLlama chain slug, for historical USD pricing.
+    priceChain: 'metis',
     subgraphId: null, // Uses Metis-hosted Graph endpoint
     poolContract: '0x90df02551bB792286e8D4f13E0e357b4Bf1D6a57',
     rpcUrl: 'https://andromeda.metis.io/?owner=1088',
@@ -145,7 +169,9 @@ export const NETWORKS_V4 = {
   ethereum: {
     name: 'Ethereum',
     chainId: 1,
-    // No v4 subgraph published yet, so v4 is RPC-only and has no USD pricing.
+    priceChain: 'ethereum',
+    // No v4 subgraph published yet, so v4 is RPC-only. USD comes from
+    // DefiLlama via priceChain rather than from a subgraph.
     subgraphId: null,
     rpcUrl: 'https://gateway.tenderly.co/public/mainnet',
     explorerUrl: 'https://etherscan.io',

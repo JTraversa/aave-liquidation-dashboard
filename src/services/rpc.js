@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import { MAX_RPC_CHUNKS } from '../config/networks';
+import { attachUsdValues } from './prices';
 
 const POOL_ABI = [
   'event LiquidationCall(address indexed collateralAsset, address indexed debtAsset, address indexed user, uint256 debtToCover, uint256 liquidatedCollateralAmount, address liquidator, bool receiveAToken)',
@@ -66,7 +67,9 @@ async function getV4ReserveToken(provider, spoke, reserveId) {
       GET_RESERVE_SELECTOR + ethers.zeroPadValue(ethers.toBeHex(reserveId), 32).slice(2);
     const raw = await provider.call({ to: spoke, data });
     const underlying = ethers.getAddress('0x' + raw.slice(26, 66));
-    v4ReserveCache[key] = await getTokenInfo(provider, underlying);
+    // Carry the address through: prices.js needs it, and getTokenInfo returns
+    // only the symbol and decimals.
+    v4ReserveCache[key] = { ...(await getTokenInfo(provider, underlying)), address: underlying };
   } catch {
     v4ReserveCache[key] = { symbol: `reserve ${reserveId}`, decimals: 18 };
   }
@@ -194,10 +197,15 @@ export async function fetchLiquidationsFromRPC(
       debtSymbol: debtInfo.symbol,
       debtAmount,
       debtValueUSD: 0,
+      // Kept only so prices.js can look these up; not rendered.
+      collateralAddress: collateralAsset,
+      debtAddress: debtAsset,
       explorerUrl: networkConfig.explorerUrl,
       source: 'rpc',
     };
   });
+
+  await attachUsdValues(results, networkConfig.priceChain);
 
   return {
     results: results.sort((a, b) => b.timestamp - a.timestamp),
@@ -330,10 +338,15 @@ export async function fetchV4LiquidationsFromRPC(
         ethers.formatUnits(event.args.debtAmountRestored, debt.decimals)
       ),
       debtValueUSD: 0,
+      // Kept only so prices.js can look these up; not rendered.
+      collateralAddress: collateral.address,
+      debtAddress: debt.address,
       explorerUrl: networkConfig.explorerUrl,
       source: 'rpc',
     };
   });
+
+  await attachUsdValues(results, networkConfig.priceChain);
 
   return {
     results: results.sort((a, b) => b.timestamp - a.timestamp),
